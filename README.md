@@ -14,5 +14,5 @@ MVVM
 ## Services
 
 ## TODO
-On 19.07: 
-continue with Texts
+On 23.07: 
+Shapes
