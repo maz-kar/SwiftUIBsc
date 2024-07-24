@@ -14,5 +14,5 @@ MVVM
 ## Services
 
 ## TODO
-On 25.07: 
-Continue with
+Next on 25.07: 
+- Gradient
