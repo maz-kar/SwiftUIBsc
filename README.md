@@ -14,5 +14,5 @@ MVVM
 ## Services
 
 ## TODO
-On 23.07: 
-Shapes
+On 25.07: 
+Continue with
