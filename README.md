@@ -14,5 +14,5 @@ MVVM
 ## Services
 
 ## TODO
-Next on 25.07: 
-- Gradient
+Next on 26.07: 
+- Images
