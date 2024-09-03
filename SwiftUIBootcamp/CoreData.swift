@@ -11,7 +11,6 @@ import CoreData
 class CoreDataViewModel: ObservableObject {
     let container: NSPersistentContainer
     @Published var savedEntities: [FruitEntity] = []
-    @State var textFieldText: String = ""
     
     init() {
         container = NSPersistentContainer(name: "FruitsContainer")
@@ -20,7 +19,6 @@ class CoreDataViewModel: ObservableObject {
                 print("Error Loading Core Data. \(error)")
             }
         }
-        
         fetchRequest()
     }
     
@@ -41,6 +39,22 @@ class CoreDataViewModel: ObservableObject {
         saveData()
     }
     
+    func deleteFruit(offsets: IndexSet) {
+        guard let index = offsets.first else { return }
+        let fruitEntity = savedEntities[index]
+        container.viewContext.delete(fruitEntity)
+        
+        saveData()
+    }
+    
+    func updateFruit(entity: FruitEntity) {
+        let currentEntity = entity.name ?? ""
+        let newEntity = currentEntity + "!"
+        entity.name = newEntity
+        
+        saveData()
+    }
+    
     func saveData() {
         do {
             try container.viewContext.save()
@@ -56,34 +70,49 @@ class CoreDataViewModel: ObservableObject {
 struct CoreData: View {
     @StateObject var vm = CoreDataViewModel()
     let backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+    @State var textFieldText: String = ""
     
     var body: some View {
-        Text("Hello")
-//        VStack(spacing: 15) {
-//            TextField("Add your Fruit here...", text: vm.$textFieldText)
-//                .font(.headline)
-//                .frame(maxWidth: .infinity)
-//                .frame(height: 55)
-//                .padding(.horizontal)
-//                .background(Color(backgroundColor))
-//                .clipShape(RoundedRectangle(cornerRadius: 10))
-//            
-//            Button(action: {
-//                vm.addFruit(text: vm.textFieldText)
-//                print(vm.textFieldText)
-//            }, label: {
-//                Text("Submit")
-//                    .font(.headline)
-//                    .foregroundStyle(Color.white)
-//                    .frame(maxWidth: .infinity)
-//                    .frame(height: 55)
-//                    .padding(.horizontal)
-//                    .background(Color.blue)
-//                    .clipShape(RoundedRectangle(cornerRadius: 10))
-//            })
-//        }
-//        .padding()
+        NavigationStack {
+            VStack(spacing: 20) {
+                TextField("Add your Fruit here...", text: $textFieldText)
+                    .font(.headline)
+                    .padding(.leading)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 55)
+                    .background(Color(backgroundColor))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                
+                Button(action: {
+                    //Good practice to not add empty row if user taps on empty textFieldText
+                    guard !textFieldText.isEmpty else { return }
+                    vm.addFruit(text: textFieldText)
+                    textFieldText = ""
+                }, label: {
+                    Text("Save")
+                        .font(.headline)
+                        .foregroundStyle(Color.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 55)
+                        .background(Color.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                })
+            }
+            .padding(.horizontal)
+            List {
+                ForEach(vm.savedEntities) { entity in
+                    Text(entity.name ?? "No Name")
+                        .onTapGesture {
+                            vm.updateFruit(entity: entity)
+                        }
+                }
+                .onDelete(perform: vm.deleteFruit)
+            }
+            .listStyle(.plain)
+            .navigationTitle("Fruits ")
+        }
     }
+    
 }
 
 #Preview {
