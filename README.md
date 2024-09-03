@@ -14,5 +14,6 @@ MVVM
 ## Services
 
 ## TODO
-Next on 26.07: 
-- Images
+On 03.09: 
+- Finish CoreData with MVVM
+
